@@ -6,9 +6,9 @@ Any privelidged or otherwise sensitive information is replaced with general term
 
 Our goals in this project are:
 
-    <summary>Retrieve our credentials from Databricks's native dbutils secrets functionality</summary>
-    <summary>Estalish a database connection to our Microsoft Services SQL Server</summary>
-    <summary>Perform some simple operations on our single day of data and push to our historical database</summary>
+  <summary>Retrieve our credentials from Databricks's native dbutils secrets functionality</summary>
+  <summary>Estalish a database connection to our Microsoft Services SQL Server</summary>
+  <summary>Perform some simple operations on our single day of data and push to our historical database</summary>
 
 Firstly, install the pymssql package and import. ([documentation](http://www.pymssql.org/))
 
