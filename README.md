@@ -2,13 +2,13 @@
 ## MSSQL to Databricks with Databricks Secrets
 
 Here's a quick solve for a real-world scenario where I needed to connect MSSQL to Databricks to perform some edits and push to a separate database.
-Any privelidged or otherwise sensitive information is replaced with general terms
+Any privelidged or otherwise sensitive information is replaced with general terms.
 
 Our goals in this project are:
 
-  <summary>Retrieve our credentials from Databricks's native dbutils secrets functionality</summary>
-  <summary>Estalish a database connection to our Microsoft Services SQL Server</summary>
-  <summary>Perform some simple operations on our single day of data and push to our historical database</summary>
+ - Retrieve our credentials from Databricks's native dbutils secrets functionality.
+ - Estalish a database connection to our Microsoft Services SQL Server.
+ - Perform some simple operations on our single day of data and push to our historical database.
 
 Firstly, install the pymssql package and import. ([documentation](http://www.pymssql.org/))
 
@@ -77,4 +77,4 @@ Finally, we write our transformed data to a new table in Databricks.
     except Exception as e:
         print(e)
 
-The real-world scenario this is based on ended with scheduling a task in a Databricks workflow.
+In the real-world scenario, I ended finalized the project by scheduling a task in a Databricks workflow.
