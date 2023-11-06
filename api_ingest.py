@@ -61,15 +61,15 @@ conn.close()
 fieldnames = [fields[i][3].replace(' ','_') for i in range(len(fields))]
 df_today = pd.DataFrame(result, columns = fieldnames)
 
+#some basic operations
+df_today['col2'] = np.where(df_today['col2'] == df_today['col1'], None, df_today['col2'])
 col_list = ['col1', 'col2', 'col3']
 for i in col_list:
     df_today[i] = df_today[i].apply(lambda x: None if x < 100 else x)
-
-df_today['col2'] = np.where(df_today['col2'] == df_today['col1'], None, df_today['col2'])
-
-
+    
+#final publishing to our databricks table
 try:
     spark_df = spark.createDataFrame(df_today, verifySchema=False)
-    spark_df.write.mode('append).saveAsTable("database.tablename")
+    spark_df.write.mode('append').saveAsTable("database.tablename")
 except Exception as e:
     print(e)
