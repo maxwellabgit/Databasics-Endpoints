@@ -1,15 +1,15 @@
-# API Ingest
+# Retrieving Data From Disparate Endpoints
 ## MSSQL to Databricks with Databricks Secrets
 
-Here's a quick solve for a real-world scenario where I needed to connect MSSQL to Databricks to perform some edits and push to a separate database.
+Here's a quick solve for a real-world scenario where I needed to connect MSSQL to Databricks to perform some data transformations and push to a separate database.
 Any privelidged or otherwise sensitive information is replaced with general terms.
 
 ## Our goals in this project are:
- - Retrieve our credentials from Databricks's native dbutils secrets functionality.
- - Estalish a database connection to our Microsoft Services SQL Server.
- - Perform some simple operations on our single day of data and push to our historical database.
+ 1. Retrieve our credentials from Databricks's native dbutils secrets functionality.
+ 2. Estalish a database connection to our Microsoft Services SQL Server.
+ 3. Perform some simple data operations and push to our historical database.
 
-Firstly, install the pymssql package and import. ([documentation](http://www.pymssql.org/))
+First, install the pymssql package and import. ([documentation](http://www.pymssql.org/))
 
     import pandas as pd
     import numpy as np
@@ -17,7 +17,8 @@ Firstly, install the pymssql package and import. ([documentation](http://www.pym
     import pymssql
     import requests
 
-Note: There's always "!pip install pymssql"
+> [!NOTE]
+> There's always  **_!pip install pymssql_**
 
 ### Retrieve Credentials From Databricks Scope Secrets
 
@@ -43,7 +44,7 @@ Write SQL queries. Here we write two queries. One query to retrieve field names 
     q_fieldname = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Table_Name'"
     q_data = "SELECT [col1], [col2], [col3] FROM database.table"
 
-Connect to the database with pymssql using server, port, instance, user, password, and database objects assigned previously. In this case, our credentials are obfuscated with base64 encoding prior to storage in Databricks Secrets, so we use base64 to decode our information when assigning to our 'password' object.
+Connect to the database with pymssql using server, port, instance, user, password, and database objects assigned previously. In this case, our credentials are obfuscated with base64 encoding prior to storage in Databricks Secrets, so we use _**base64.b64decode**_ to decode our information when assigning to our 'password' object.
 
     conn = pymssql.connect(host = f'{server}:{port}\\{instance}',
         user = usr,
@@ -60,7 +61,7 @@ Here is an alternate example of retrieving a json using a requests API. This end
         payload = {'f':'json',
                         'parameter1':'false',
                         'where':'clause',
-                    '   'fields':'fields'}
+                        'fields':'fields'}
         r_login = requests.get(login_url,
                         user = usr,
                         password = base64.b64decode(pwd))
@@ -90,7 +91,7 @@ Having a list of field names directly from the source table helps prevent data c
     fieldnames = [fields[i][3].replace(' ','_') for i in range(len(fields))]
     df_today = pd.DataFrame(result, columns = fieldnames)
 
-An example of some operations we could do. My favorite Python package, numpy is super useful for efficient manipulation of pandas dataframes.
+An example of some operations we could do. Numpy is super useful for efficient manipulation of Pandas dataframes.
 
     df_today['col2'] = np.where(df_today['col2'] == df_today['col1'], None, df_today['col2'])
     
@@ -98,7 +99,7 @@ An example of some operations we could do. My favorite Python package, numpy is 
     for i in col_list:
         df_today[i] = df_today[i].apply(lambda x: None if x < 100 else x)
 
-Finally, we write our transformed data to a new table in Databricks. We use write.mode('append') because this script adds current data to a historical database.
+Finally, we write our transformed data to a new table in Databricks. We use write.mode('append') because this script adds the current day's data to a historical database.
 
     try:
         spark_df = spark.createDataFrame(df_today, verifySchema=False)
@@ -108,4 +109,4 @@ Finally, we write our transformed data to a new table in Databricks. We use writ
 
 ### Summary
 
-The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform desired operations against data formatted as pandas dataframes, and output said data to one or more outputs. In the real-world scenario, I performed many more data manipulation operations and finalized the project by scheduling a task in a Databricks workflow. This project was formatted with attention towards scalability. Following this project outline, we can add new endpoints at the beginning of our pipeline, add operations to the ingested data, and increase the number of output sources.
+The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform desired operations against data formatted as pandas dataframes, and output said data to one or more endpoints. In the real-world scenario, I performed many more data manipulation operations and finalized the project by scheduling a task in a Databricks workflow. This project was formatted with attention towards scalability. Following this project outline, we can add new endpoints at the beginning of our pipeline, add operations to the ingested data, and increase the number of output sources iteratively.
