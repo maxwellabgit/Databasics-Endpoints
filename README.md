@@ -1,5 +1,4 @@
-# Retrieving Data From Disparate Endpoints
-## MSSQL to Databricks with Databricks Secrets
+# MSSQL to Databricks with Databricks Secrets
 
 Here's a quick solve for a real-world scenario where I needed to connect MSSQL to Databricks to perform some data transformations and push to a separate database.
 Any privelidged or otherwise sensitive information is replaced with general terms.
