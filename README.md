@@ -1,6 +1,6 @@
 # MSSQL to Databricks with Databricks Secrets
 
-Here's a quick solve for a real-world scenario where I needed to connect MSSQL to Databricks to perform some data transformations and push to a separate database.
+This project is based on a few real-world scenarios where I needed to connect MSSQL Server to Databricks to perform some data transformations and push to a separate database.
 Any privelidged or otherwise sensitive information is replaced with general terms.
 
 ## Our goals in this project are:
@@ -21,7 +21,7 @@ First, install the pymssql package and import. ([documentation](http://www.pymss
 
 ### Retrieve Credentials From Databricks Scope Secrets
 
-Databricks Scope Secrets are a native Databricks utility that allows users to store sensitive variables (encoded certificates, passwords, usernames) in a secure environment. Here, we will use secrets to store our sensitive personal access information. Check [this]() notebook for basics on uploading Databricks Secrets.
+Databricks Scope Secrets are a native Databricks utility that allows users to store sensitive variables (encoded certificates, passwords, usernames) in a secure environment. Here, we will use secrets to store our sensitive personal access information.
 
 Define the scope in which you saved your connection credentials and assign credentials to objects.
 
@@ -38,7 +38,7 @@ Define server information.
     instance = 'COMPUTEINSTANCE'
     port = '123'
 
-Write SQL queries. Here we write two queries. One query to retrieve field names from the table we are connecting to, and one query to retrieve the current day's data.
+Write SQL queries. Here we write two queries. One query to retrieve field names from the table we are connecting to, and one query to retrieve the table's data.
 
     q_fieldname = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Table_Name'"
     q_data = "SELECT [col1], [col2], [col3] FROM database.table"
@@ -85,7 +85,7 @@ Execute each query, assign objects, then close the server connection.
 
 ### Transform Data
 
-Having a list of field names directly from the source table helps prevent data cleanliness issues if the table format changes server-side. Here, we remove spaces from each field name and create a pandas dataframe to perform any desired operations.
+Here, we remove spaces from each field name and create a pandas dataframe to perform any desired operations. Assigning column names to the list of field names directly from the source table prevents code failure or cleanliness issues if the table format changes server-side.
 
     fieldnames = [fields[i][3].replace(' ','_') for i in range(len(fields))]
     df_today = pd.DataFrame(result, columns = fieldnames)
@@ -108,4 +108,4 @@ Finally, we write our transformed data to a new table in Databricks. We use writ
 
 ### Summary
 
-The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform desired operations against data formatted as pandas dataframes, and output said data to one or more endpoints. In the real-world scenario, I performed many more data manipulation operations and finalized the project by scheduling a task in a Databricks workflow. This project was formatted with attention towards scalability. Following this project outline, we can add new endpoints at the beginning of our pipeline, add operations to the ingested data, and increase the number of output sources iteratively.
+The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform desired operations against data using pandas dataframes, and return transformed data to one or more outputs. In the real-world scenarios this code is based on, I performed many more data manipulation operations and finalized the project by scheduling tasks in a Databricks workflow. This project was formatted with attention towards scalability. Following this project outline, we can add new endpoints at the beginning of our pipeline, add operations to the ingested data, and increase the number of output sources separately and iteratively.
