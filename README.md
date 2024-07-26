@@ -1,7 +1,6 @@
 # MSSQL to Databricks with Databricks Secrets
 
 This project is based on a few real-world scenarios where I needed to connect MSSQL Server to Databricks to perform some data transformations and push to a separate database.
-Any privelidged or otherwise sensitive information is replaced with general terms.
 
 ## Our goals in this project are:
  1. Retrieve our credentials from Databricks's native dbutils secrets functionality.
@@ -38,12 +37,12 @@ Define server information.
     instance = 'COMPUTEINSTANCE'
     port = '123'
 
-Write SQL queries. Here we write two queries. One query to retrieve field names from the table we are connecting to, and one query to retrieve the table's data.
+Here we write two queries. One query to retrieve field names from the table we are connecting to, and one query to retrieve the table's data.
 
     q_fieldname = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Table_Name'"
     q_data = "SELECT [col1], [col2], [col3] FROM database.table"
 
-Connect to the database with pymssql using server, port, instance, user, password, and database objects assigned previously. In this case, our credentials are obfuscated with base64 encoding prior to storage in Databricks Secrets, so we use _**base64.b64decode**_ to decode our information when assigning to our 'password' object.
+Connect to the database with pymssql using server, database, instance, port, user and password objects assigned previously. In this case, our credentials are obfuscated with base64 encoding prior to storage in Databricks Secrets, so we use _**base64.b64decode**_ to decode our information when assigning our 'password' object.
 
     conn = pymssql.connect(host = f'{server}:{port}\\{instance}',
         user = usr,
@@ -51,7 +50,7 @@ Connect to the database with pymssql using server, port, instance, user, passwor
         database=database)
     c = conn.cursor()
 
-Here is an alternate example of retrieving a json using a requests API. This endpoint requires that we retrieve an authentication cookie before performing our data call, necessitating a preliminary 'get' request.
+Here is an alternate example of retrieving a json using requests API. This endpoint requires an authentication cookie before performing our data call, necessitating a preliminary 'get' request to retrieve said cookie :cookie:
  
     url = 'https://123.gov/services/rest-api/gis-tool/123'
     login_url = 'https://123.gov/portal/rest/login'
@@ -108,4 +107,4 @@ Finally, we write our transformed data to a new table in Databricks. We use writ
 
 ### Summary
 
-The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform desired operations against data using pandas dataframes, and return transformed data to one or more outputs. In the real-world scenarios this code is based on, I performed many more data manipulation operations and finalized the project by scheduling tasks in a Databricks workflow. This project was formatted with attention towards scalability. Following this project outline, we can add new endpoints at the beginning of our pipeline, add operations to the ingested data, and increase the number of output sources separately and iteratively.
+The core methodology behind this script is to ingest data from an MSSQL server or API endpoint, perform operations against the data using pandas dataframes, and return transformed data to one or more outputs. In the real-world scenarios this code is based on, I performed many more data manipulation operations and finalized the project by scheduling tasks in a Databricks workflow. This project was formatted with attention towards scalability. We can add new endpoints at the beginning of our pipeline, operations to the ingested data, or increase the number of output sources.
